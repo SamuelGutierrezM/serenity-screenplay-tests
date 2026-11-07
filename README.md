@@ -91,3 +91,7 @@ Para ver el reporte de Serenity de una ejecución, abre el build en Jenkins, ent
 
 - Las URLs y las opciones de Chrome se configuran en `src/test/resources/serenity.conf`.
 - Failsafe define `SE_SKIP_DRIVER_IN_PATH=true` para que Selenium Manager ignore cualquier `chromedriver` desactualizado que haya en el `PATH` y use siempre la versión que corresponde al Chrome instalado.
+
+## Autoría
+
+Proyecto desarrollado por Samuel Gutierrez con asistencia de [Claude Code](https://claude.com/claude-code) para la generación y documentación de partes del código.
