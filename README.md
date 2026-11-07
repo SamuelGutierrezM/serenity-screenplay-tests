@@ -64,6 +64,29 @@ Para regenerar el reporte sin volver a ejecutar las pruebas:
 mvn serenity:aggregate
 ```
 
+## Integración continua con Jenkins
+
+El proyecto incluye un [`Jenkinsfile`](Jenkinsfile) con un pipeline declarativo que:
+
+1. **Detecta cambios**: revisa el repositorio cada 5 minutos (`pollSCM('H/5 * * * *')`) y se ejecuta solo si hay commits nuevos.
+2. **Ejecuta las pruebas** en la etapa `Pruebas Serenity` con Chrome en modo headless:
+   ```bash
+   mvn -B clean verify -Dheadless.mode=true
+   ```
+3. **Publica los resultados** siempre, aunque el build falle:
+   - Resultados JUnit desde `target/failsafe-reports/TEST-*.xml`.
+   - El reporte de Serenity (`target/site/serenity/**`) como artefacto archivado del build.
+
+### Configuración necesaria en Jenkins
+
+- En **Manage Jenkins → Tools**, registra las herramientas con estos nombres exactos:
+  - JDK: `jdk21`
+  - Maven: `maven3`
+- El agente donde corre el pipeline debe tener Google Chrome instalado.
+- Crea un job de tipo **Pipeline** (o *Multibranch Pipeline*) que apunte a este repositorio y use *Pipeline script from SCM* con la ruta `Jenkinsfile`.
+
+Para ver el reporte de Serenity de una ejecución, abre el build en Jenkins, entra en **Artifacts** y abre `target/site/serenity/index.html`.
+
 ## Notas
 
 - Las URLs y las opciones de Chrome se configuran en `src/test/resources/serenity.conf`.
