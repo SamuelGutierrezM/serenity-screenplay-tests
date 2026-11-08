@@ -1,0 +1,46 @@
+name: Pruebas Serenity
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v7
+
+      - name: Instalar Java 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Ejecutar pruebas en Chrome headless
+        run: mvn -B clean verify -Dheadless.mode=true
+
+      - name: Publicar resultados JUnit
+        if: always()
+        uses: mikepenz/action-junit-report@v6
+        with:
+          report_paths: 'target/failsafe-reports/TEST-*.xml'
+          check_name: Resultados de las pruebas
+
+      - name: Subir reporte de Serenity
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: reporte-serenity
+          path: target/site/serenity/
+          retention-days: 14
